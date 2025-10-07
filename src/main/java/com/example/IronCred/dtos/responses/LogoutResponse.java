@@ -1,4 +1,4 @@
 package com.example.IronCred.dtos.responses;
 
-public class GetPasswordsResponse {
+public class LogoutResponse {
 }

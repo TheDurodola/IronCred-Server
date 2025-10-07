@@ -1,4 +1,4 @@
 package com.example.IronCred.dtos.requests;
 
-public class GetPasswordsRequest {
+public class LoginRequest {
 }
