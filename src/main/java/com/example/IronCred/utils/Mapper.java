@@ -1,9 +1,12 @@
 package com.example.IronCred.utils;
 
 import com.example.IronCred.data.models.Password;
+import com.example.IronCred.data.models.User;
 import com.example.IronCred.dtos.requests.AddPasswordRequest;
+import com.example.IronCred.dtos.requests.RegistrationRequest;
 import com.example.IronCred.dtos.responses.AddPasswordResponse;
 import com.example.IronCred.dtos.responses.GetPasswordResponse;
+import com.example.IronCred.dtos.responses.RegistrationResponse;
 
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -40,5 +43,24 @@ public class Mapper {
         response.setUsername(password.getUsername());
         response.setPassword(password.getPassword());
         return response;
+    }
+
+    public static RegistrationResponse map(User user) {
+        RegistrationResponse response = new RegistrationResponse();
+        response.setId(user.getId());
+        response.setEmail(user.getEmail());
+        response.setUsername(user.getUsername());
+        return response;
+    }
+
+    public static User map(RegistrationRequest request) {
+        User user = new User();
+        user.setEmail(request.getEmail());
+        user.setUsername(request.getUsername());
+        user.setPassword(request.getPassword());
+        user.setFirstname(request.getFirstname());
+        user.setLastname(request.getLastname());
+        user.setPhone(request.getPhone());
+        return user;
     }
 }
