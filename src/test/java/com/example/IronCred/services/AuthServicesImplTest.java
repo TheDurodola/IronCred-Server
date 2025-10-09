@@ -8,6 +8,8 @@ import com.example.IronCred.dtos.requests.RegistrationRequest;
 import com.example.IronCred.dtos.responses.LoginResponse;
 import com.example.IronCred.dtos.responses.RegistrationResponse;
 import com.example.IronCred.exceptions.InvalidEmailException;
+import com.example.IronCred.exceptions.InvalidPasswordException;
+import com.example.IronCred.exceptions.InvalidUsernameException;
 import com.example.IronCred.exceptions.UserAlreadyExistException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -66,8 +68,95 @@ class AuthServicesImplTest {
         assertNotNull(user);
     }
 
+    @Test
+    void testThatAttemptToLoginIncorrectPasswordWouldThrownTheAppropriateException(){
+        RegistrationRequest request = new RegistrationRequest();
+        request.setUsername("Tester");
+        request.setPassword("password123");
+        request.setEmail("bolajIduroDola@GmaIl.com");
+        request.setFirstname("Bolaji");
+        request.setLastname("Durodola");
+        request.setPhone("08148260470");
+
+        authServices.registeredUser(request);
 
 
+        LoginRequest  loginRequest = new LoginRequest();
+        loginRequest.setUsername("Tester");
+        loginRequest.setPassword("password");
+        assertThrows(InvalidPasswordException.class,()-> authServices.login(loginRequest));
+
+
+    }
+
+    @Test
+    void attemptToDeleteAccountWithInvalidUsernameWillThrowTheAppropriateException(){
+
+        RegistrationRequest request = new RegistrationRequest();
+        request.setUsername("Tester");
+        request.setPassword("password123");
+        request.setEmail("bolajIduroDola@GmaIl.com");
+        request.setFirstname("Bolaji");
+        request.setLastname("Durodola");
+        request.setPhone("08148260470");
+
+        RegistrationResponse response = authServices.registeredUser(request);
+
+        DeleteUserRequest deleteUserRequest = new DeleteUserRequest();
+        deleteUserRequest.setUsername("Teste");
+        deleteUserRequest.setPassword("password123");
+        deleteUserRequest.setId(response.getId());
+        deleteUserRequest.setEmail("bolajidurodola@gmail.com");
+
+        assertThrows(InvalidUsernameException.class, () -> authServices.deleteUser(deleteUserRequest));
+
+    }
+
+    @Test
+    void attemptToDeleteAccountWithInvalidPasswordWillThrowTheAppropriateException(){
+
+        RegistrationRequest request = new RegistrationRequest();
+        request.setUsername("Tester");
+        request.setPassword("password123");
+        request.setEmail("bolajIduroDola@GmaIl.com");
+        request.setFirstname("Bolaji");
+        request.setLastname("Durodola");
+        request.setPhone("08148260470");
+
+        RegistrationResponse response = authServices.registeredUser(request);
+
+        DeleteUserRequest deleteUserRequest = new DeleteUserRequest();
+        deleteUserRequest.setUsername("Tester");
+        deleteUserRequest.setPassword("password12");
+        deleteUserRequest.setId(response.getId());
+        deleteUserRequest.setEmail("bolajidurodola@gmail.com");
+
+        assertThrows(InvalidPasswordException.class, () -> authServices.deleteUser(deleteUserRequest));
+
+    }
+
+    @Test
+    void attemptToDeleteAccountWithInvalidEmailWillThrowTheAppropriateException(){
+
+        RegistrationRequest request = new RegistrationRequest();
+        request.setUsername("Tester");
+        request.setPassword("password123");
+        request.setEmail("bolajIduroDola@GmaIl.com");
+        request.setFirstname("Bolaji");
+        request.setLastname("Durodola");
+        request.setPhone("08148260470");
+
+        RegistrationResponse response = authServices.registeredUser(request);
+
+        DeleteUserRequest deleteUserRequest = new DeleteUserRequest();
+        deleteUserRequest.setUsername("Tester");
+        deleteUserRequest.setPassword("password123");
+        deleteUserRequest.setId(response.getId());
+        deleteUserRequest.setEmail("bolajidurodoa@gmail.com");
+
+        assertThrows(InvalidEmailException.class, () -> authServices.deleteUser(deleteUserRequest));
+
+    }
 
     @Test
     void testThatPasswordInTheDB_IsTheHashed(){

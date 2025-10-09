@@ -24,7 +24,6 @@ public class AuthServicesImpl implements AuthServices {
     @Autowired
     private Users users;
 
-
     private static PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Override
@@ -36,18 +35,11 @@ public class AuthServicesImpl implements AuthServices {
         return map(users.save(map(request)));
     }
 
-    private void verifyEmailAndUsername(RegistrationRequest request) {
-
-
-        users.findByEmail(request.getEmail()).ifPresent(user -> {throw new UserAlreadyExistException("Email already exists");});
-        users.findByUsername(request.getUsername()).ifPresent(user -> {throw new UserAlreadyExistException("Username already exists");});
-    }
-
-
 
     @Override
     public LoginResponse login(LoginRequest request) {
-       User user = users.findByUsername(request.getUsername()).orElseThrow(UserDoesntExistException::new);
+        request.setUsername(request.getUsername().toLowerCase());
+        User user = users.findByUsername(request.getUsername()).orElseThrow(UserDoesntExistException::new);
 
        String password = user.getPassword();
 
@@ -62,7 +54,6 @@ public class AuthServicesImpl implements AuthServices {
     }
 
 
-
     @Override
     public Optional<User> getUserById(String id) {
         return Optional.empty();
@@ -70,11 +61,8 @@ public class AuthServicesImpl implements AuthServices {
 
     @Override
     public void deleteUser(DeleteUserRequest request) {
-
         User user = users.findById(request.getId()).get();
-
         validateUserDetails(request, user);
-
         users.delete(user);
     }
 
@@ -88,5 +76,11 @@ public class AuthServicesImpl implements AuthServices {
         if(!passwordEncoder.matches(request.getPassword(), user.getPassword())){
             throw new InvalidPasswordException("Invalid Password");
         }
+    }
+    private void verifyEmailAndUsername(RegistrationRequest request) {
+
+
+        users.findByEmail(request.getEmail()).ifPresent(user -> {throw new UserAlreadyExistException("Email already exists");});
+        users.findByUsername(request.getUsername()).ifPresent(user -> {throw new UserAlreadyExistException("Username already exists");});
     }
 }

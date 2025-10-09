@@ -9,6 +9,7 @@ import java.util.Optional;
 public interface PasswordVault extends MongoRepository<Password, String> {
     Optional<List<Password>> findAllByUsername(String username);
     Optional<Password> findById(String id);
+    Optional<List<Password>> findAllByUserId(String userId);
     Boolean existsByUsername(String username);
     Boolean existsByWebsite(String website);
 }

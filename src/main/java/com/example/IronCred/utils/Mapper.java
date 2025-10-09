@@ -28,6 +28,7 @@ public class Mapper {
         password.setUsername(request.getUsername());
         password.setPassword(request.getPassword());
         password.setWebsite(request.getWebsite());
+        password.setUserId(request.getUserId());
         return password;
     }
 

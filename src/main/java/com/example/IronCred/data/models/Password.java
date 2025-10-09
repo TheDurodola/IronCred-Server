@@ -18,6 +18,8 @@ public class Password {
     @Id
     private String id;
 
+    private String userId;
+
     private String website;
 
     private String username;
@@ -30,6 +32,4 @@ public class Password {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    @DBRef
-    private User user;
 }
