@@ -2,13 +2,11 @@ package com.example.IronCred.dtos.responses;
 
 import lombok.Data;
 
-import java.time.LocalDateTime;
-
 @Data
-public class GetUserPasswordsResponse {
+public class GetAPasswordResponse {
     private String id;
-    private String website;
     private String username;
     private String password;
+    private String website;
     private String createdAt;
 }

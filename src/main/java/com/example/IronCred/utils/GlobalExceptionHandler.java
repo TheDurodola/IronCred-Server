@@ -58,6 +58,22 @@ public class GlobalExceptionHandler {
     }
 
 
+    @ExceptionHandler(NoWebsitesFoundException.class)
+    public ResponseEntity<Map<String, String>> handlNoWebsiteFoundException(NoWebsitesFoundException e) {
+        Map<String, String> errors = new HashMap<>();
+        errors.put("message", e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errors);
+    }
+
+    @ExceptionHandler(NoEntryFoundException.class)
+    public ResponseEntity<Map<String, String>> handlNoEntryFoundException(NoEntryFoundException e) {
+        Map<String, String> errors = new HashMap<>();
+        errors.put("message", e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errors);
+    }
+
+
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, String>> handleException(Exception e) {
         Map<String, String> errors = new HashMap<>();

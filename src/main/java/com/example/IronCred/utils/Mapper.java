@@ -4,9 +4,7 @@ import com.example.IronCred.data.models.Password;
 import com.example.IronCred.data.models.User;
 import com.example.IronCred.dtos.requests.AddPasswordRequest;
 import com.example.IronCred.dtos.requests.RegistrationRequest;
-import com.example.IronCred.dtos.responses.AddPasswordResponse;
-import com.example.IronCred.dtos.responses.GetPasswordResponse;
-import com.example.IronCred.dtos.responses.RegistrationResponse;
+import com.example.IronCred.dtos.responses.*;
 
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -45,6 +43,49 @@ public class Mapper {
         response.setPassword(password.getPassword());
         return response;
     }
+
+    public static GetUserPasswordsResponse mapPasswords(Password password){
+        GetUserPasswordsResponse response = new GetUserPasswordsResponse();
+        response.setId(password.getId());
+        response.setWebsite(password.getWebsite());
+        response.setUsername(password.getUsername());
+        response.setPassword(password.getPassword());
+        DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM);
+        response.setCreatedAt(password.getCreatedAt().format(formatter));
+        return response;
+    }
+
+    public static GetAPasswordResponse mapPasswordToGetAPassword(Password password) {
+        GetAPasswordResponse response = new GetAPasswordResponse();
+        response.setId(password.getId());
+        response.setUsername(password.getUsername());
+        response.setPassword(password.getPassword());
+        response.setWebsite(password.getWebsite());
+        DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM);
+        response.setCreatedAt(password.getCreatedAt().format(formatter));
+        return response;
+    }
+
+    public static GetWebsitesResponse mapPasswordToWebsite(Password password){
+        GetWebsitesResponse response = new GetWebsitesResponse();
+        String website = password.getWebsite();
+        website = standardizedTheWebsite(website);
+
+        response.setWebsites(website);
+        response.setId(password.getId());
+        return response;
+    }
+
+    private static String standardizedTheWebsite(String website) {
+        website = website.replace("http://www.", "");
+        website = website.replace("https://www.", "");
+        website = website.replace(".com", "");
+        int stringLength = website.length();
+        website = website.substring(0, 1).toUpperCase() + website.substring(1).toLowerCase();
+
+        return website;
+    }
+
 
     public static RegistrationResponse map(User user) {
         RegistrationResponse response = new RegistrationResponse();

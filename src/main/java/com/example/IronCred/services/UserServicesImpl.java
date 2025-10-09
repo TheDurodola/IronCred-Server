@@ -6,9 +6,7 @@ import com.example.IronCred.data.repositories.PasswordVault;
 import com.example.IronCred.data.repositories.Users;
 import com.example.IronCred.dtos.requests.*;
 import com.example.IronCred.dtos.responses.*;
-import com.example.IronCred.exceptions.AESDecryptionException;
-import com.example.IronCred.exceptions.AESEncryptionException;
-import com.example.IronCred.exceptions.UserDoesntExistException;
+import com.example.IronCred.exceptions.*;
 import com.example.IronCred.utils.AESUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,8 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.IronCred.utils.Mapper.map;
-import static com.example.IronCred.utils.Mapper.mapPasswordToGetPasswordResponse;
+import static com.example.IronCred.utils.Mapper.*;
 
 
 @Service
@@ -40,6 +37,8 @@ public class UserServicesImpl implements UserServices {
 
         User user = users.findById(request.getUserId()).orElseThrow(()-> new UserDoesntExistException("User doesn't exist"));
 
+        request.setWebsite(request.getWebsite().toLowerCase());
+
         encryptRequest(request);
 
 //        if(passwordVault.existsByUsername(request.getUsername()) && passwordVault.existsByWebsite(request.getWebsite())){
@@ -59,6 +58,23 @@ public class UserServicesImpl implements UserServices {
 
         return map(password);
     }
+
+    public GetAPasswordResponse getPassword(GetAPasswordRequest request){
+        Password password = passwordVault.findById(request.getPasswordId()).get();
+        if(!password.getUserId().equals(request.getUserid())){
+            throw new UserDoesntExistException("This entry doesn't belong to this user");
+        }
+        try {
+            password.setPassword(aesUtil.decrypt(password.getPassword()));
+            password.setUsername(aesUtil.decrypt(password.getUsername()));
+        } catch (Exception e) {
+            throw new AESDecryptionException(e.getMessage());
+        }
+
+        return mapPasswordToGetAPassword(password);
+    }
+
+
 
     @Override
     public GetPasswordResponse getPassword(GetPasswordRequest request) {
@@ -80,9 +96,9 @@ public class UserServicesImpl implements UserServices {
     }
 
     @Override
-    public List<Password> getUserPassword(GetUserPasswords request) {
+    public List<GetUserPasswordsResponse> getUserPassword(GetUserPasswordsRequest request) {
         List<Password> passwords = passwordVault.findAllByUserId(request.getUserId()).get();
-        List<Password> response = new ArrayList<>();
+        List<GetUserPasswordsResponse> response = new ArrayList<>();
         for (Password password : passwords) {
             try {
                 password.setPassword(aesUtil.decrypt(password.getPassword()));
@@ -90,8 +106,11 @@ public class UserServicesImpl implements UserServices {
             }catch (Exception e){
                 throw new AESDecryptionException("Error while decrypting: " + e.getMessage());
             }
-            response.add(password);
+            GetUserPasswordsResponse  processed =mapPasswords(password);
+            response.add(processed);
         }
+
+        if (response.isEmpty()) throw new NoEntryFoundException("No websites found for this user");
         return response;
     }
 
@@ -125,5 +144,16 @@ public class UserServicesImpl implements UserServices {
         } catch (Exception e) {
             throw new AESEncryptionException("Error while encrypting: " + e.getMessage());
         }
+    }
+
+    public List<GetWebsitesResponse> getWebsites(GetWebsitesRequest request) {
+        List<Password> passwords = passwordVault.findAllByUserId(request.getUserId()).get();
+        List<GetWebsitesResponse> response = new ArrayList<>();
+        for (Password password : passwords) {
+            GetWebsitesResponse  processed = mapPasswordToWebsite(password);
+            response.add(processed);
+        }
+        if (response.isEmpty()) throw new NoWebsitesFoundException("No websites found for this user");
+        return response;
     }
 }

@@ -234,7 +234,7 @@ class UserServicesImplTest {
         savedPassword = passwordServices.addPassword(password);
         assertEquals(2L,passwordVault.count());
 
-        GetUserPasswords request1 = new GetUserPasswords();
+        GetUserPasswordsRequest request1 = new GetUserPasswordsRequest();
         request1.setUserId(response.getId());
 
         assertEquals(2L, passwordServices.getUserPassword(request1).size());
